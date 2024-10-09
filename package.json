@@ -78,7 +78,8 @@
   },
   "dependencies": {
     "classnames": "^2.3.2",
-    "jsonp": "^0.2.1"
+    "jsonp": "^0.2.1",
+    "react-share": "^5.1.0"
   },
   "peerDependencies": {
     "react": "^17 || ^18"
