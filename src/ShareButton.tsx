@@ -21,6 +21,7 @@ const getBoxPositionOnScreenCenter = (width: number, height: number) => ({
 function windowOpen(
   url: string,
   { height, width, ...configRest }: { height: number; width: number; [key: string]: any },
+  hasBlankTarget: boolean,
   onClose?: (dialog: Window | null) => void,
 ) {
   const config: { [key: string]: string | number } = {
@@ -38,13 +39,18 @@ function windowOpen(
     ...configRest,
   };
 
-  const shareDialog = window.open(
-    url,
-    '',
-    Object.keys(config)
-      .map(key => `${key}=${config[key]}`)
-      .join(', '),
-  );
+  let shareDialog: Window;
+  if (hasBlankTarget) {
+    shareDialog = window.open(url, '_blank') as Window;
+  } else {
+    shareDialog = window.open(
+      url,
+      '',
+      Object.keys(config)
+        .map(key => `${key}=${config[key]}`)
+        .join(', '),
+    ) as Window;
+  }
 
   if (onClose) {
     const interval = window.setInterval(() => {
@@ -102,6 +108,7 @@ interface CustomProps<LinkOptions> {
   windowWidth?: number;
   windowHeight?: number;
   windowPosition?: WindowPosition;
+  hasBlankTarget?: boolean;
 }
 
 export type Props<LinkOptions extends Record<string, unknown>> = Omit<
@@ -130,6 +137,7 @@ export default function ShareButton<LinkOptions extends Record<string, unknown>>
   windowHeight = 400,
   windowPosition = 'windowCenter',
   windowWidth = 550,
+  hasBlankTarget = true,
   ...rest
 }: Props<LinkOptions>) {
   const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -158,7 +166,7 @@ export default function ShareButton<LinkOptions extends Record<string, unknown>>
           : getBoxPositionOnScreenCenter(windowWidth, windowHeight)),
       };
 
-      windowOpen(link, windowConfig, onShareWindowClose);
+      windowOpen(link, windowConfig, hasBlankTarget, onShareWindowClose);
     }
 
     if (onClick) {
